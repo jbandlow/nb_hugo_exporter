@@ -1,3 +1,4 @@
+import datetime
 import os.path
 import re
 
@@ -41,14 +42,14 @@ class UnderscorePreprocessor(Preprocessor):
         # TODO: The other possible latex delimiters.
 
         # "$$ but not \$$" "anything not ending in \"  "$$".
-        display_math = re.compile(r'[^\\](\$\$.*?[^\\]\$\$)')
-        out = re.findall(display_math, markdown, re.DOTALL)
+        display_math = re.compile(r'[^\\](\$\$.*?[^\\]\$\$)', re.DOTALL)
+        out = re.findall(display_math, markdown)
 
         # "$ but not \$ or $$"  "anything not ending in \"  "$".
-        inline_math =  re.compile(r'[^\$\\](\$.*?[^\\]\$)')
+        inline_math =  re.compile(r'[^\$\\](\$.*?[^\\]\$)', re.DOTALL)
         # Inline math cannot span two newlines.
         for block in markdown.split('\n\n'):
-            out += re.findall(inline_math, block, re.DOTALL)
+            out += re.findall(inline_math, block)
 
         return out
 
@@ -85,9 +86,18 @@ class UnderscorePreprocessor(Preprocessor):
         file_path = os.path.join(metadata['path'], metadata['name'] + '.ipynb')
 
         # Set default metadata
-        hugo['date'] = hugo.get('date') or os.path.getmtime(file_path) # TODO: Format
-        hugo['title'] = (hugo.get('title') or
-            ' '.join(_.capitalize() for _ in metadata['name'].split('_'))
+
+        # Hugo expects a date of YYYY-MM-DDTHH:MM[+-]HH:MM
+        # This timezone formatting is not possible with strftime, so we do a little munging.
+        LOCAL_TZ = datetime.datetime.now(datetime.timezone.utc).astimezone().tzinfo
+        date = datetime.datetime.fromtimestamp(os.path.getmtime(file_path))
+        date = date.astimezone(LOCAL_TZ).strftime('%Y-%m-%dT%H:%M:%S%z')
+        date = date[:-2] + ':' + date[-2:]
+        hugo['date'] = hugo.get('date') or date
+
+        title = ' '.join(_.capitalize() for _ in metadata['name'].split('_'))
+        hugo['title'] = hugo.get('title') or title
+
         hugo['draft'] = hugo.get('draft') or True
 
         for index, cell in enumerate(nb.cells):

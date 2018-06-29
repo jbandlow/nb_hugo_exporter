@@ -1,0 +1,7 @@
+Pipfile
+Pipfile.lock
+**__pycache__**
+**egg-info**
+**.pyc
+**.swp
+

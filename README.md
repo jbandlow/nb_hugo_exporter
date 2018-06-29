@@ -17,7 +17,7 @@ draft: True
 ```
 along with any other metadata you've specified in the notebook under the key
 `hugo`. Note that `title` is the filename with snake\_case replaced by
-initial caps. All auto-generated values (`title`, `date`, and `draft`) can
+Initial Caps. All auto-generated values (`title`, `date`, and `draft`) can
 be overridden in the notebook metadata.
 
 The resulting markdown will contain the following hugo shortcodes:
@@ -47,13 +47,13 @@ https://gohugo.io/content-management/formats/#enable-mathjax) on your pages.
 Note that `nbconvert --to hugo` solves the [underscore problem](
 https://gohugo.io/content-management/formats/#issues-with-markdown) with the
 "tedious" solution of simply quoting all underscores in math mode. So there
-is no need for the MathJax configuration script that "fixes <code> tags" in
+is no need for the MathJax configuration script that "fixes \<code\> tags" in
 your Javascript, or the custom CSS described in that post.
 
 That's it! Happy blogging with Jupyter notebooks and Hugo.
 
 ## Acknowledgements
-Shout-out to the amazing [Hugo](https://gohugo.io),
+Shout-out to the amazing [Hugo](https://gohugo.io), and
 [Jupyter](https://jupyter.org) teams for building incredible tools.
 
 Also thanks to [Stephan Fitzpatrick](https://github.com/knowsuchagency), whose
