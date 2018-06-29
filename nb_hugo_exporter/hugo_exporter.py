@@ -102,6 +102,15 @@ class UnderscorePreprocessor(Preprocessor):
 
         for index, cell in enumerate(nb.cells):
             nb.cells[index], resources = self.preprocess_cell(cell, resources, index)
+
+        # TODO: Remove this ugly hack. We are modifying the filenames of the
+        # outputs so they will not be written to a subdirectory of the output
+        # directory. This is likely do-able with a Config.
+        for path in resources['outputs']:
+            file = resources['outputs'].pop(path)
+            # Replace path/to/file.ext with ./file.ext
+            new_path = './' + path.split('/')[-1])
+            resources['outputs'][new_path] = file
         return nb, resources
 
 

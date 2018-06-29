@@ -3,7 +3,7 @@
 ## Basic Installation and Use
 ```
 pip install nb_hugo_exporter
-nbconvert path/to/nb_file.ipynb --to hugo --output content/posts/insert-title-here
+nbconvert path/to/nb_file.ipynb --to hugo --output index --output-dir content/posts/insert-title-here
 ```
 This will create a `content/posts/insert-title-here` directory with an
 `index.md` file derived from `nb.ipynb`. The metadata will include
