@@ -4,7 +4,7 @@ with open("README.md") as readme:
     long_description = readme.read()
 
 setuptools.setup(
-    name='nb_hugo_exporter',
+    name='nbhugoexporter',
     version='0.1dev',
     author='Jason Bandlow',
     author_email='jbandlow@gmail.com',
@@ -15,7 +15,7 @@ setuptools.setup(
     packages=setuptools.find_packages(),
     install_requires=['nbconvert', 'traitlets'],
     entry_points = {
-        'nbconvert.exporters': ['hugo = nb_hugo_exporter.hugo_exporter:HugoExporter'],
+        'nbconvert.exporters': ['hugo = nbhugoexporter.hugoexporter:HugoExporter'],
     },
     include_package_data=True,
 )

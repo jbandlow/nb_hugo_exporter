@@ -2,18 +2,22 @@ import datetime
 import os.path
 import re
 
-from nbconvert.exporters.markdown import MarkdownExporter
 from nbconvert.preprocessors import Preprocessor
 
-from traitlets import default
-from traitlets.config import Config
 
-class UnderscorePreprocessor(Preprocessor):
+class HugoPreprocessor(Preprocessor):
     """
-    A Preprocessor to quote underscores in math mode. See
-    https://gohugo.io/content-management/formats/#issues-with-markdown for
-    more context on the problem. This resolves the issue with the "tedious"
-    solution of quoting all underscores.
+    A Preprocessor to handle exporting to Hugo.
+
+    There are three main responsibilities of this class:
+
+    1.  Properly quote underscores in math mode. See
+        https://gohugo.io/content-management/formats/#issues-with-markdown for
+        more context on the problem. This resolves the issue with the
+        "tedious" solution of quoting all underscores.
+    2.  Set default values for metadata.
+    3.  Make sure output resource files end up in the same directory as the
+        output file itself. # TODO: Probably the Exporter should handle this.
     """
     def quote_underscores_in_latex(self, string, latex):
         """
@@ -109,20 +113,7 @@ class UnderscorePreprocessor(Preprocessor):
         for path in resources['outputs']:
             file = resources['outputs'].pop(path)
             # Replace path/to/file.ext with ./file.ext
-            new_path = './' + path.split('/')[-1])
+            new_path = './' + path.split('/')[-1]
             resources['outputs'][new_path] = file
         return nb, resources
 
-
-class HugoExporter(MarkdownExporter):
-    @property
-    def template_path(self):
-        return super().template_path + [os.path.dirname(__file__)]
-
-    @default('template_file')
-    def _template_file_default(self):
-        return 'hugo_markdown.tpl'
-
-    @property
-    def preprocessors(self):
-        return [UnderscorePreprocessor]
