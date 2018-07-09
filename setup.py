@@ -1,4 +1,7 @@
-r"""Simple setup.py file."""
+r"""Simple setup.py file.
+
+TODO: Bump version, add classifiers. Possibly add a script.
+"""
 
 import setuptools
 

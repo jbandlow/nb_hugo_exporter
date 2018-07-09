@@ -1,9 +1,9 @@
 r"""Preprocessor Module for Hugo.
 
-The docstring for a module should generally list the classes, exceptions and
-functions (and any other objects) that are exported by the module, with a
-one-line summary of each. (These summaries generally give less detail than the
-summary line in the object's docstring.)
+This module exports a single class.
+
+    HugoPreprocessor: An `nbconvert` `Preprocessor` for exporting notebooks
+        to a Markdown format compatible with [Hugo](https://gohugo.io)
 
 """
 import datetime
@@ -16,33 +16,21 @@ from nbconvert.preprocessors import Preprocessor
 class HugoPreprocessor(Preprocessor):
     r"""Preprocessor class for Hugo.
 
-    The docstring for a class should summarize its behavior and list the public
-    methods and instance variables. If the class is intended to be subclassed,
-    and has an additional interface for subclasses, this interface should be
-    listed separately (in the docstring). The class constructor should be
-    documented in the docstring for its __init__ method. Individual methods
-    should be documented by their own docstring.
-
-    If a class subclasses another class and its behavior is mostly inherited
-    from that class, its docstring should mention this and summarize the
-    differences. Use the verb "override" to indicate that a subclass method
-    replaces a superclass method and does not call the superclass method; use
-    the verb "extend" to indicate that a subclass method calls the superclass
-    method (in addition to its own behavior).  A Preprocessor to handle
-    exporting to Hugo.
-
-    There are three main responsibilities of this class:
+    This class overrides the `preprocess` and `preprocess_cell` methods of
+    the `nbcovert` `Preprocessor` class, to accomplish the following tasks:
 
     1.  Properly quote underscores in math mode. See
         https://gohugo.io/content-management/formats/#issues-with-markdown for
         more context on the problem. This resolves the issue with the
         "tedious" solution of quoting all underscores.
-    2.  Set default values for metadata.
+
+    2.  Set default values for metadata (date, title, and draft).
+
     3.  Make sure output resource files end up in the same directory as the
         output file itself. # TODO: Probably the Exporter should handle this.
     """
 
-    def quote_underscores_in_latex(self, text, latex):
+    def _quote_underscores_in_latex(self, text, latex):
         r"""
         Return a modified `text`, where all '_' in `latex` have been quoted.
 
@@ -57,14 +45,15 @@ class HugoPreprocessor(Preprocessor):
         quoted_latex = latex.replace(r'_', r'\_')
         return text.replace(latex, quoted_latex)
 
-    def extract_latex(self, markdown):
+    def _extract_latex(self, markdown):
         r"""
         Return a list of the blocks of latex occurring in `markdown`.
 
         Args:
             markdown: A string
 
-        Returns: A list of the strings of latex, including delimiters.
+        Returns: A list of the strings of latex occurring in `markdown`,
+                 including delimiters.
 
         """
         # TODO: The other possible latex delimiters.
@@ -81,6 +70,14 @@ class HugoPreprocessor(Preprocessor):
 
         return out
 
+    def _time_format_hugo(self, ts):
+        r"""Return a string in the ISO-8601 flavor that Hugo uses."""
+        local_tz = datetime.datetime.now(
+            datetime.timezone.utc).astimezone().tzinfo
+        out = ts.astimezone(local_tz).strftime('%Y-%m-%dT%H:%M:%S%z')
+        # %z is [+-]HHMM, but we want [+-]HH:MM
+        return out[:-2] + ':' + out[-2:]
+
     def preprocess_cell(self, cell, resources, cell_index):
         r"""
         Quote the underscores in Latex appearing in the cell.
@@ -93,26 +90,18 @@ class HugoPreprocessor(Preprocessor):
 
         """
         if cell.cell_type == 'markdown':
-            latex_segments = self.extract_latex(cell.source)
+            latex_segments = self._extract_latex(cell.source)
             for latex in latex_segments:
-                cell.source = self.quote_underscores_in_latex(
+                cell.source = self._quote_underscores_in_latex(
                     cell.source, latex)
 
         elif cell.cell_type == 'code':
             for o in cell.outputs or []:
                 latex = o.get('data', {}).get('text/latex')
                 if latex:
-                    o['data']['text/latex'] = self.quote_underscores_in_latex(
+                    o['data']['text/latex'] = self._quote_underscores_in_latex(
                         latex, latex)
         return cell, resources
-
-    def time_format_hugo(self, ts):
-        r"""Return a string in the ISO-8601 flavor that Hugo uses."""
-        local_tz = datetime.datetime.now(
-            datetime.timezone.utc).astimezone().tzinfo
-        out = ts.astimezone(local_tz).strftime('%Y-%m-%dT%H:%M:%S%z')
-        # %z is [+-]HHMM, but we want [+-]HH:MM
-        return out[:-2] + ':' + out[-2:]
 
     def preprocess(self, nb, resources):
         r"""
@@ -131,7 +120,7 @@ class HugoPreprocessor(Preprocessor):
         # Set default metadata
         file_path = os.path.join(metadata['path'], metadata['name'] + '.ipynb')
         ts = datetime.datetime.fromtimestamp(os.path.getmtime(file_path))
-        hugo['date'] = hugo.get('date') or self.time_format_hugo(ts)
+        hugo['date'] = hugo.get('date') or self._time_format_hugo(ts)
 
         title = ' '.join(_.capitalize() for _ in metadata['name'].split('_'))
         hugo['title'] = hugo.get('title') or title
@@ -145,7 +134,8 @@ class HugoPreprocessor(Preprocessor):
 
         # TODO: Remove this ugly hack. We are modifying the filenames of the
         # outputs so they will not be written to a subdirectory of the output
-        # directory. This can likely be done with a Config.
+        # directory. This can likely be done with a Config for the Exporter,
+        # so that these are never wrong in the first place.
         for path in resources['outputs']:
             file = resources['outputs'].pop(path)
             # Replace path/to/file.ext with ./file.ext
