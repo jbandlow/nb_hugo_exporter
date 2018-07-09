@@ -1,3 +1,5 @@
+r"""Simple setup.py file."""
+
 import setuptools
 
 with open("README.md") as readme:
@@ -14,8 +16,10 @@ setuptools.setup(
     url='https://github.com/jbandlow/nb_hugo_exporter',
     packages=setuptools.find_packages(),
     install_requires=['nbconvert', 'traitlets'],
-    entry_points = {
-        'nbconvert.exporters': ['hugo = nbhugoexporter.hugoexporter:HugoExporter'],
+    entry_points={
+        'nbconvert.exporters': [
+            'hugo = nbhugoexporter.hugoexporter:HugoExporter',
+        ],
     },
     include_package_data=True,
 )
