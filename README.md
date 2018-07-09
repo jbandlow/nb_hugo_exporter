@@ -3,10 +3,24 @@
 ## Basic Installation and Use
 ```
 pip install nb_hugo_exporter
+```
+will install the exporter. You will also need to add some shortcode definitions
+to Hugo. You can customize these as you wish, but an easy way to get started is
+to run the following from the root of your Hugo project:
+```
+mkdir -p layouts/shortcodes
+for x in cell input; do for y in start end;
+  do curl -L https://github.com/jbandlow/nb_hugo_exporter/raw/master/resources/jupyter_$x\_$y.html > layouts/shortcodes/jupyter_$x\_$y.html;
+done; done;
+```
+
+You can then run the exporter with
+```
 nbconvert path/to/nb_file.ipynb --to hugo --output index --output-dir content/posts/insert-title-here
 ```
 This will create a `content/posts/insert-title-here` directory with an
-`index.md` file derived from `nb.ipynb`. The metadata will include
+`index.md` file derived from `nb.ipynb`. The metadata in the head of that file
+will include
 ```
 ---
 title: Nb File
@@ -15,10 +29,18 @@ draft: True
 ...
 ---
 ```
-along with any other metadata you've specified in the notebook under the key
-`hugo`. Note that `title` is the filename with snake\_case replaced by
-Initial Caps. All auto-generated values (`title`, `date`, and `draft`) can
-be overridden in the notebook metadata.
+along with any other metadata you've specified. To set metadata, go to Edit ->
+Edit Notebook Metadata from your notebook, and add
+```
+"hugo": {
+  "key1": value1,
+  ...
+}
+```
+with whatever keys and values you wish to appear in the head of your document.
+Note that `title` will default to the notebook filename with snake\_case
+replaced by Initial Caps. All auto-generated values (`title`, `date`, and
+`draft`) can be overridden in the notebook metadata.
 
 The resulting markdown will contain the following hugo shortcodes:
 ```
@@ -30,12 +52,8 @@ The resulting markdown will contain the following hugo shortcodes:
 {{% jupyter_cell_end }}
 ```
 in the places you'd expect.  `<cell_type>` is the Jupyter cell type, e.g.,
-`markdown`, `code`, etc.  You must provide templates for these shortcodes in
-your `layouts/shortcodes/` directory. To get started, you can use the
-shortcodes from this repo:
-```
-TODO: One-liner for downloading just these files
-```
+`markdown`, `code`, etc.
+
 You may also want to configure your CSS. In particular, the exporter currently
 adds some unnecessary blank lines. These can be cleaned up with
 ```
@@ -56,7 +74,7 @@ That's it! Happy blogging with Jupyter notebooks and Hugo.
 Shout-out to the amazing [Hugo](https://gohugo.io), and
 [Jupyter](https://jupyter.org) teams for building incredible tools.
 
-Also thanks to [Stephan Fitzpatrick](https://github.com/knowsuchagency), whose
-[hugo-jupyter](http://journalpanic.com/hugo_jupyter/) project inspired this
-one. You should check it out -- it is a more automated solution than this one,
-and may be a better fit for your use case.
+For another approach to this issue, see
+[hugo-jupyter](http://journalpanic.com/hugo_jupyter/), from  [Stephan
+Fitzpatrick](https://github.com/knowsuchagency). This didn't fully fit my needs,
+but it might fit yours.
