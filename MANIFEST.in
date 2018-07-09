@@ -1,1 +1,2 @@
 include nb_hugo_exporter/hugo_markdown.tpl
+include README.md LICENSE

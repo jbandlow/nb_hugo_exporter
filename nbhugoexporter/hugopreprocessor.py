@@ -56,8 +56,6 @@ class HugoPreprocessor(Preprocessor):
                  including delimiters.
 
         """
-        # TODO: The other possible latex delimiters.
-
         # '$$ but not \$$' 'anything not ending in \'  '$$'.
         display_math = re.compile(r'[^\\](\$\$.*?[^\\]\$\$)', re.DOTALL)
         out = re.findall(display_math, markdown)
