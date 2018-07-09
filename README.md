@@ -16,11 +16,10 @@ done; done;
 
 You can then run the exporter with
 ```
-nbconvert path/to/nb_file.ipynb --to hugo --output index --output-dir content/posts/insert-title-here
+nbconvert path/to/nb_file.ipynb --to hugo --output-dir content/path/insert-title-here
 ```
-This will create a `content/posts/insert-title-here` directory with an
-`index.md` file derived from `nb.ipynb`. The metadata in the head of that file
-will include
+This will create a `content/path/insert-title-here` directory with an
+`index.md` file derived from `nb_file.ipynb`. The generated metadata will include
 ```
 ---
 title: Nb File
@@ -30,17 +29,17 @@ draft: True
 ---
 ```
 along with any other metadata you've specified. To set metadata, go to Edit ->
-Edit Notebook Metadata from your notebook, and add
+Edit Notebook Metadata from within your notebook, and add
 ```
 "hugo": {
   "key1": value1,
   ...
 }
 ```
-with whatever keys and values you wish to appear in the head of your document.
-Note that `title` will default to the notebook filename with snake\_case
-replaced by Initial Caps. All auto-generated values (`title`, `date`, and
-`draft`) can be overridden in the notebook metadata.
+with whatever keys and values you wish.  The `title` value will default to the
+notebook filename with snake\_case replaced by Initial Caps. All auto-generated
+values (`title`, `date`, and `draft`) can be overridden in the notebook
+metadata.
 
 The resulting markdown will contain the following hugo shortcodes:
 ```
@@ -60,13 +59,13 @@ adds some unnecessary blank lines. These can be cleaned up with
 .jupyter-cell p:empty { display: none; }
 ```
 
-Finally, you will also want to [include the MathJax script](
+Finally, for LaTeX to render properly, you should [include the MathJax script](
 https://gohugo.io/content-management/formats/#enable-mathjax) on your pages.
 Note that `nbconvert --to hugo` solves the [underscore problem](
 https://gohugo.io/content-management/formats/#issues-with-markdown) with the
-"tedious" solution of simply quoting all underscores in math mode. So there
-is no need for the MathJax configuration script that "fixes \<code\> tags" in
-your Javascript, or the custom CSS described in that post.
+"tedious" solution of simply quoting all underscores in math mode. So there is
+no need for the MathJax configuration script that "fixes \<code\> tags" in your
+Javascript, or the custom CSS described in that post.
 
 That's it! Happy blogging with Jupyter notebooks and Hugo.
 

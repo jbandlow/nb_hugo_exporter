@@ -25,9 +25,6 @@ class HugoPreprocessor(Preprocessor):
         "tedious" solution of quoting all underscores.
 
     2.  Set default values for metadata (date, title, and draft).
-
-    3.  Make sure output resource files end up in the same directory as the
-        output file itself. # TODO: Probably the Exporter should handle this.
     """
 
     def _quote_underscores_in_latex(self, text, latex):
@@ -130,13 +127,4 @@ class HugoPreprocessor(Preprocessor):
             nb.cells[index], resources = self.preprocess_cell(
                 cell, resources, index)
 
-        # TODO: Remove this ugly hack. We are modifying the filenames of the
-        # outputs so they will not be written to a subdirectory of the output
-        # directory. This can likely be done with a Config for the Exporter,
-        # so that these are never wrong in the first place.
-        for path in resources['outputs']:
-            file = resources['outputs'].pop(path)
-            # Replace path/to/file.ext with ./file.ext
-            new_path = './' + path.split('/')[-1]
-            resources['outputs'][new_path] = file
         return nb, resources
