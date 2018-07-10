@@ -16,7 +16,7 @@ done; done;
 
 You can then run the exporter with
 ```
-nbconvert path/to/nb_file.ipynb --to hugo --output-dir content/path/insert-title-here
+python3 -m nbconvert path/to/nb_file.ipynb --to hugo --output-dir content/path/insert-title-here
 ```
 This will create a `content/path/insert-title-here` directory with an
 `index.md` file derived from `nb_file.ipynb`. The generated metadata will include
