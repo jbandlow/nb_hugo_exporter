@@ -73,8 +73,8 @@ then easy to style. With the shortcodes in this repo, the resulting HTML
 looks like:
 
 ```
-<div class="jupyter_cell [cell_type]">
-  <div class="jupyter_input"> ... </div>
+<div class="jupyter-cell [cell_type]">
+  <div class="jupyter-input"> ... </div>
   ...
 </div>
 ```
