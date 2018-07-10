@@ -43,21 +43,52 @@ metadata.
 
 The resulting markdown will contain the following hugo shortcodes:
 ```
-{{% jupyter_cell_start <cell_type> }}
+{{% jupyter_cell_start [cell_type] }}
 {{% jupyter_input_start }}
 ...
 {{% jupyter_input_end }}
 ...
 {{% jupyter_cell_end }}
 ```
-in the places you'd expect.  `<cell_type>` is the Jupyter cell type, e.g.,
-`markdown`, `code`, etc.
+in the places you'd expect.  `[cell_type]` is the Jupyter cell type, e.g.,
+`markdown`, `code`, etc. Code itself will have GitHub style code fences:
 
-You may also want to configure your CSS. In particular, the exporter currently
-adds some unnecessary blank lines. These can be cleaned up with
+````
+```python
+import this
+```
+````
+
+Set `pygmentsCodeFences` to `true` in your Hugo configuration file to use a
+syntax highlighter. See the [hugo
+documentation](https://gohugo.io/content-management/syntax-highlighting/) for
+much more on this.
+
+## CSS configuration
+
+You may also want to configure your CSS. The main design goal for this project
+was to generate markdown that could be styled to my particular tastes.  The
+shortcodes are simply used to generate `div`s, and the corresponding classes are
+then easy to style. With the shortcodes in this repo, the resulting HTML
+looks like:
+
+```
+<div class="jupyter_cell [cell_type]">
+  <div class="jupyter_input"> ... </div>
+  ...
+</div>
+```
+
+In concert with styling the syntax highlighter, this can be
+made to look more or less like Jupyter's own theme, or like anything else you
+wish.  Note that the exporter currently adds some unnecessary blank lines. These
+can be cleaned up with
+
 ```
 .jupyter-cell p:empty { display: none; }
 ```
+
+## Latex
 
 Finally, for LaTeX to render properly, you should [include the MathJax script](
 https://gohugo.io/content-management/formats/#enable-mathjax) on your pages.
