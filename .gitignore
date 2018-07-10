@@ -4,4 +4,6 @@ Pipfile.lock
 **egg-info**
 **.pyc
 **.swp
-
+build/
+dist/
+example/

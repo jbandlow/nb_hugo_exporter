@@ -2,7 +2,7 @@
 
 ## Basic Installation and Use
 ```
-pip install nb_hugo_exporter
+pip install nbhugoexporter
 ```
 will install the exporter. You will also need to add some shortcode definitions
 to Hugo. You can customize these as you wish, but an easy way to get started is
