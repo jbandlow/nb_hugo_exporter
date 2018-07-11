@@ -2,8 +2,9 @@ r"""Preprocessor Module for Hugo.
 
 This module exports a single class.
 
-    HugoPreprocessor: An `nbconvert` `Preprocessor` for exporting notebooks
-        to a Markdown format compatible with [Hugo](https://gohugo.io)
+    HugoPreprocessor: An `nbconvert` `Preprocessor` for exporting
+    notebooks to a Markdown format compatible with
+    [Hugo](https://gohugo.io)
 
 """
 import datetime
@@ -16,27 +17,28 @@ from nbconvert.preprocessors import Preprocessor
 class HugoPreprocessor(Preprocessor):
     r"""Preprocessor class for Hugo.
 
-    This class overrides the `preprocess` and `preprocess_cell` methods of
-    the `nbcovert` `Preprocessor` class, to accomplish the following tasks:
+    This class overrides the `preprocess` and `preprocess_cell` methods
+    of the `nbcovert` `Preprocessor` class, to accomplish the following
+    tasks:
 
     1.  Properly quote underscores in math mode. See
-        https://gohugo.io/content-management/formats/#issues-with-markdown for
-        more context on the problem. This resolves the issue with the
-        "tedious" solution of quoting all underscores.
+    https://gohugo.io/content-management/formats/#issues-with-markdown
+    for more context on the problem. This resolves the issue with the
+    "tedious" solution of quoting all underscores.
 
     2.  Set default values for metadata (date, title, and draft).
     """
 
     def _quote_underscores_in_latex(self, text, latex):
         r"""
-        Return a modified `text`, where all '_' in `latex` have been quoted.
+        Return modified `text`, with the '_' in `latex` quoted.
 
         Args:
-            text: A string which contains `latex` as a substring
-            latex: A substring of `text` consisting of actual Latex
+            text: A string which contains `latex` as a substring.
+            latex: A substring of `text` consisting of actual Latex.
 
-        Returns: A copy of `text`, where every underscore inside `latex` is
-                 replaced by '\_'.
+        Returns: A copy of `text`, where every underscore inside `latex`
+        is replaced by '\_'.
 
         """
         quoted_latex = latex.replace(r'_', r'\_')
@@ -50,7 +52,7 @@ class HugoPreprocessor(Preprocessor):
             markdown: A string
 
         Returns: A list of the strings of latex occurring in `markdown`,
-                 including delimiters.
+        including delimiters.
 
         """
         # '$$ but not \$$' 'anything not ending in \'  '$$'.
@@ -77,11 +79,12 @@ class HugoPreprocessor(Preprocessor):
         r"""
         Quote the underscores in Latex appearing in the cell.
 
-        Args: See the `nbconvert.preprocessors.Preprocessor` documentation.
+        Args: See the `nbconvert.preprocessors.Preprocessor`
+        documentation.
 
-        Returns: The tuple `(cell, resources)`, where `cell` has been modified
-                 so that every '_' in Latex that is part of a markdown cell or
-                 output of type 'text/latex' is preceded by '\'.
+        Returns: The tuple `(cell, resources)`, where `cell` has been
+        modified so that every '_' in Latex that is part of a markdown
+        cell or output of type 'text/latex' is preceded by '\'.
 
         """
         if cell.cell_type == 'markdown':
@@ -100,9 +103,10 @@ class HugoPreprocessor(Preprocessor):
 
     def preprocess(self, nb, resources):
         r"""
-        Set metadata defaults, process underscores, and set output file paths.
+        Set metadata defaults, and process markdown.
 
-        Args: See the `nbconvert.preprocessors.Preprocessor` documentation.
+        Args: See the `nbconvert.preprocessors.Preprocessor`
+        documentation.
 
         Returns: (nb, resources) where these have been fully processed.
 

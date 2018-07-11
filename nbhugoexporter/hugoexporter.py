@@ -2,8 +2,9 @@ r"""The hugoexporter module.
 
 This module exports a single class:
 
-    HugoExporter: An `nbconvert` `MarkdownExporter` for exporting notebooks
-        to a Markdown format compatible with [Hugo](https://gohugo.io)
+    HugoExporter: An `nbconvert` `MarkdownExporter` for exporting
+    notebooks to a Markdown format compatible with
+    [Hugo](https://gohugo.io)
 
 """
 import os.path
@@ -17,9 +18,9 @@ from traitlets import default
 class HugoExporter(MarkdownExporter):
     r"""The HugoExporter class.
 
-    This class overrides the `MarkdownExporter` of `nbconvert` to use a custom
-    template and preprocessor. It is registered as an `entry_point` in
-    `setup.py` as follows
+    This class overrides the `MarkdownExporter` of `nbconvert` to use a
+    custom template and preprocessor. It is registered as an
+    `entry_point` in `setup.py` as follows
     ```
         'nbconvert.exporters': [
             'hugo = nbhugoexporter.hugoexporter:HugoExporter',
@@ -46,8 +47,8 @@ class HugoExporter(MarkdownExporter):
         r"""Extend resources dictionary initialization.
 
         - Make sure the primary output filename is `index.md`
-        - Do not create a subdirectory for output files, use the `output-dir`
-          directory.
+        - Do not create a subdirectory for output files, use the
+          `output-dir` directory.
         """
         resources = super()._init_resources(resources)
         resources['unique_key'] = 'index'
