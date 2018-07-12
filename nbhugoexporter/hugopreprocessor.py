@@ -29,6 +29,35 @@ class HugoPreprocessor(Preprocessor):
     2.  Set default values for metadata (date, title, and draft).
     """
 
+    def _insert_newline_before_lists(self, text):
+        r"""Ensure that there is a blank line before all lists."""
+        # Capture all single lines starting with "* "
+        ptn = re.compile(r'(\n\* [^\n]*)')
+        lines = re.findall(ptn, text)
+
+        # Create a list of 'blocks' which are runs of consecutive lines.
+        blocks = []
+        block = ''
+        for line in lines:
+            if block + line in text:
+                block += line
+            else:
+                blocks.append(block)
+                block = line
+        blocks.append(block)
+
+        # Find the starting index of each block that is NOT already
+        # preceded by \n.
+        indexes = [text.find(b) for b in blocks if '\n' + b not in text]
+
+        # Ensure indexes starts with 0 and ends with None, for the join
+        # below.
+        if indexes[0] != 0:
+            indexes = [0] + indexes
+        indexes.append(None)
+        return '\n'.join(text[indexes[i]:indexes[i + 1]]
+                         for i in range(len(indexes) - 1))
+
     def _quote_underscores_in_latex(self, text, latex):
         r"""
         Return modified `text`, with the '_' in `latex` quoted.
@@ -60,7 +89,8 @@ class HugoPreprocessor(Preprocessor):
         out = re.findall(display_math, markdown)
 
         # '$ but not \$ or $$'  'anything not ending in \'  '$'.
-        inline_math = re.compile(r'[^\$\\](\$.*?[^\\]\$)', re.DOTALL)
+        inline_math = re.compile(r'[^\$\\](\$[^$].*?[^\\]\$)',
+                                 re.DOTALL)
         # Inline math cannot span two newlines.
         for block in markdown.split('\n\n'):
             out += re.findall(inline_math, block)
@@ -97,8 +127,9 @@ class HugoPreprocessor(Preprocessor):
             for o in cell.outputs or []:
                 latex = o.get('data', {}).get('text/latex')
                 if latex:
-                    o['data']['text/latex'] = self._quote_underscores_in_latex(
-                        latex, latex)
+                    o['data'][
+                        'text/latex'] = self._quote_underscores_in_latex(
+                            latex, latex)
         return cell, resources
 
     def preprocess(self, nb, resources):
@@ -117,11 +148,14 @@ class HugoPreprocessor(Preprocessor):
         hugo = metadata['hugo']
 
         # Set default metadata
-        file_path = os.path.join(metadata['path'], metadata['name'] + '.ipynb')
-        ts = datetime.datetime.fromtimestamp(os.path.getmtime(file_path))
+        file_path = os.path.join(metadata['path'],
+                                 metadata['name'] + '.ipynb')
+        ts = datetime.datetime.fromtimestamp(
+            os.path.getmtime(file_path))
         hugo['date'] = hugo.get('date') or self._time_format_hugo(ts)
 
-        title = ' '.join(_.capitalize() for _ in metadata['name'].split('_'))
+        title = ' '.join(
+            _.capitalize() for _ in metadata['name'].split('_'))
         hugo['title'] = hugo.get('title') or title
 
         hugo['draft'] = hugo.get('draft') or True
@@ -131,4 +165,4 @@ class HugoPreprocessor(Preprocessor):
             nb.cells[index], resources = self.preprocess_cell(
                 cell, resources, index)
 
-        return nb, resources
+            return nb, resources
