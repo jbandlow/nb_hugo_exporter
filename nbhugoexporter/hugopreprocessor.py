@@ -22,24 +22,30 @@ class HugoPreprocessor(Preprocessor):
     1.  Properly quote underscores in math mode. See
         https://gohugo.io/content-management/formats/#issues-with-markdown for
         more context on the problem. This resolves the issue with the
-        "tedious" solution of quoting all underscores.
+        "tedious" solution of quoting all underscores. Similarly, any
+        `\\` in latex also needs to be replaced by `\newline`.
 
     2.  Set default values for metadata (date, title, and draft).
     """
 
-    def _quote_underscores_in_latex(self, text, latex):
+    def _clean_latex(self, text, latex):
         r"""
-        Return a modified `text`, where all '_' in `latex` have been quoted.
+        Return a modified `text`, with the substring `latex` modified.
+
+        In particular, underscores are properly quoted
+        (https://gohugo.io/content-management/formats/#issues-with-markdown)
+        and `\\` is replaced with `\newline`.
 
         Args:
             text: A string which contains `latex` as a substring
             latex: A substring of `text` consisting of actual Latex
 
-        Returns: A copy of `text`, where every underscore inside `latex` is
-                 replaced by '\_'.
+        Returns: A copy of `text`, where every underscore and `\\`
+                 inside `latex` has been quoted.
 
         """
         quoted_latex = latex.replace(r'_', r'\_')
+        quoted_latex = quoted_latex.replace(r'\\', r'\newline')
         return text.replace(latex, quoted_latex)
 
     def _extract_latex(self, markdown):
@@ -87,14 +93,13 @@ class HugoPreprocessor(Preprocessor):
         if cell.cell_type == 'markdown':
             latex_segments = self._extract_latex(cell.source)
             for latex in latex_segments:
-                cell.source = self._quote_underscores_in_latex(
-                    cell.source, latex)
+                cell.source = self._clean_latex(cell.source, latex)
 
         elif cell.cell_type == 'code':
             for o in cell.outputs or []:
                 latex = o.get('data', {}).get('text/latex')
                 if latex:
-                    o['data']['text/latex'] = self._quote_underscores_in_latex(
+                    o['data']['text/latex'] = self._clean_latex(
                         latex, latex)
         return cell, resources
 
@@ -113,11 +118,14 @@ class HugoPreprocessor(Preprocessor):
         hugo = metadata['hugo']
 
         # Set default metadata
-        file_path = os.path.join(metadata['path'], metadata['name'] + '.ipynb')
-        ts = datetime.datetime.fromtimestamp(os.path.getmtime(file_path))
+        file_path = os.path.join(metadata['path'],
+                                 metadata['name'] + '.ipynb')
+        ts = datetime.datetime.fromtimestamp(
+            os.path.getmtime(file_path))
         hugo['date'] = hugo.get('date') or self._time_format_hugo(ts)
 
-        title = ' '.join(_.capitalize() for _ in metadata['name'].split('_'))
+        title = ' '.join(
+            _.capitalize() for _ in metadata['name'].split('_'))
         hugo['title'] = hugo.get('title') or title
 
         hugo['draft'] = hugo.get('draft') or True
