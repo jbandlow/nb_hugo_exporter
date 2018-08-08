@@ -45,7 +45,7 @@ class HugoPreprocessor(Preprocessor):
 
         """
         quoted_latex = latex.replace(r'_', r'\_')
-        quoted_latex = quoted_latex.replace(r'\\', r'\newline')
+        quoted_latex = quoted_latex.replace(r'\\\\', r'\newline')
         return text.replace(latex, quoted_latex)
 
     def _extract_latex(self, markdown):
