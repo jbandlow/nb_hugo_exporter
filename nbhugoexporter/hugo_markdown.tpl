@@ -4,9 +4,13 @@
 {%- for key, value in resources.metadata.hugo.items() %}
 {{ key }}:
 {%- if value is string and key != 'date' -%}
-  {{ ' "' ~ value }}"
+{{ ' "' ~ value }}"
+{%- elif value is sameas true -%}
+{{ ' true' }}
+{%- elif value is sameas false -%}
+{{ ' false' }}
 {%- else -%}
-  {{ ' ' ~ value }}
+{{ ' ' ~ value }}
 {%- endif -%}
 {%- endfor %}
 ---
