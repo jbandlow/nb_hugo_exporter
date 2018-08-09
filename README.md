@@ -64,6 +64,11 @@ syntax highlighter. See the [hugo
 documentation](https://gohugo.io/content-management/syntax-highlighting/) for
 much more on this.
 
+You may also want to enable the `noEmptyLineBeforeBlock` [BlackFriday
+extension](https://gohugo.io/content-management/formats/#blackfriday-extensions).
+Markdown in Jupyter is processed as though this setting were enabled.
+
+
 ## CSS configuration
 
 You may also want to configure your CSS. The main design goal for this project

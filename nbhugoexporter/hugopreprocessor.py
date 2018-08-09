@@ -64,7 +64,7 @@ class HugoPreprocessor(Preprocessor):
 
         """
         # '$$ but not \$$' 'anything not ending in \'  '$$'.
-        display_math = re.compile(r'[^\\](\$\$.*?[^\\]\$\$)', re.DOTALL)
+        display_math = re.compile(r'(?:^|[^\\])(\$\$.*?[^\\]\$\$)', re.DOTALL)
         out = re.findall(display_math, markdown)
 
         # '$ but not \$ or $$'  'anything not ending in \'  '$'.
@@ -103,8 +103,7 @@ class HugoPreprocessor(Preprocessor):
             for o in cell.outputs or []:
                 latex = o.get('data', {}).get('text/latex')
                 if latex:
-                    o['data']['text/latex'] = self._clean_latex(
-                        latex, latex)
+                    o['data']['text/latex'] = self._clean_latex(latex, latex)
         return cell, resources
 
     def preprocess(self, nb, resources):
@@ -122,14 +121,11 @@ class HugoPreprocessor(Preprocessor):
         hugo = metadata['hugo']
 
         # Set default metadata
-        file_path = os.path.join(metadata['path'],
-                                 metadata['name'] + '.ipynb')
-        ts = datetime.datetime.fromtimestamp(
-            os.path.getmtime(file_path))
+        file_path = os.path.join(metadata['path'], metadata['name'] + '.ipynb')
+        ts = datetime.datetime.fromtimestamp(os.path.getmtime(file_path))
         hugo['date'] = hugo.get('date') or self._time_format_hugo(ts)
 
-        title = ' '.join(
-            _.capitalize() for _ in metadata['name'].split('_'))
+        title = ' '.join(_.capitalize() for _ in metadata['name'].split('_'))
         hugo['title'] = hugo.get('title') or title
 
         hugo['draft'] = hugo.get('draft') or True
