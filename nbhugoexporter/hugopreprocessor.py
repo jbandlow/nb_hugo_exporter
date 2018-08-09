@@ -108,7 +108,6 @@ class HugoPreprocessor(Preprocessor):
 
         """
         nb_metadata = nb['metadata']
-        print(f'The nb_metadata is {nb_metadata}')
         if nb_metadata.get('hugo') is None:
             nb_metadata['hugo'] = {}
         hugo = nb_metadata['hugo']
