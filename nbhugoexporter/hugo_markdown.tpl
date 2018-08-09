@@ -1,7 +1,7 @@
 {% extends 'markdown.tpl' %}
 
 {% block header %}---
-{%- for key, value in resources.metadata.hugo.items() %}
+{%- for key, value in nb.metadata.hugo.items() %}
 {{ key }}:
 {%- if value is string and key != 'date' -%}
 {{ ' "' ~ value }}"
