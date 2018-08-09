@@ -32,7 +32,7 @@ class HugoPreprocessor(Preprocessor):
         r"""
         Return a modified `text`, with the substring `latex` modified.
 
-        In particular, underscores are properly quoted
+        In particular, underscores and asterisks are properly quoted
         (https://gohugo.io/content-management/formats/#issues-with-markdown)
         and `\\` is replaced with `\newline`.
 
@@ -44,8 +44,12 @@ class HugoPreprocessor(Preprocessor):
                  inside `latex` has been quoted.
 
         """
-        quoted_latex = latex.replace(r'_', r'\_')
-        quoted_latex = quoted_latex.replace(r'\\\\', r'\newline')
+        # Quote newlines first, as the other operations potentially
+        # introduce multiple backslashes. I.e., \_ --> \\_
+        # which is harmless unless we go on to replace \\ with \newline.
+        quoted_latex = latex.replace(r'\\', r'\newline')
+        quoted_latex = quoted_latex.replace(r'_', r'\_')
+        quoted_latex = quoted_latex.replace(r'*', r'\*')
         return text.replace(latex, quoted_latex)
 
     def _extract_latex(self, markdown):
