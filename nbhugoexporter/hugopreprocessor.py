@@ -115,17 +115,19 @@ class HugoPreprocessor(Preprocessor):
         Returns: (nb, resources) where these have been fully processed.
 
         """
-        metadata = resources['metadata']
-        if metadata.get('hugo') is None:
-            metadata['hugo'] = {}
-        hugo = metadata['hugo']
+        nb_metadata = nb['metadata']
+        if nb_metadata.get('hugo') is None:
+            nb_metadata['hugo'] = {}
+        hugo = nb_metadata['hugo']
 
         # Set default metadata
-        file_path = os.path.join(metadata['path'], metadata['name'] + '.ipynb')
+        path = resources['metadata']['path']
+        name = resources['metadata']['name']
+        file_path = os.path.join(path, name + '.ipynb')
         ts = datetime.datetime.fromtimestamp(os.path.getmtime(file_path))
         hugo['date'] = hugo.get('date') or self._time_format_hugo(ts)
 
-        title = ' '.join(_.capitalize() for _ in metadata['name'].split('_'))
+        title = ' '.join(_.capitalize() for _ in name.split('_'))
         hugo['title'] = hugo.get('title') or title
 
         hugo['draft'] = hugo.get('draft') or True
