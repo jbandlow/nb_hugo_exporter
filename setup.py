@@ -26,5 +26,5 @@ setuptools.setup(
     name='nbhugoexporter',
     packages=setuptools.find_packages(),
     url='https://github.com/jbandlow/nb_hugo_exporter',
-    version='0.1.3',
+    version='0.2.0',
 )
